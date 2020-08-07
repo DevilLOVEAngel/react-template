@@ -20,6 +20,44 @@ module.exports = (env) => {
           test: /\.css$/i,
           use: ['style-loader', 'css-loader'],
         },
+        // Rules for images
+        {
+          test: /\.(bmp|gif|jpg|jpeg|png|svg)$/,
+          oneOf: [
+            // Inline lightweight images into CSS
+            {
+              issuer: /\.(css|less|styl|scss|sass|sss)$/,
+              oneOf: [
+                // Inline lightweight SVGs as UTF-8 encoded DataUrl string
+                {
+                  test: /\.svg$/,
+                  loader: 'svg-url-loader',
+                  options: {
+                    name: '[hash:8].[ext]',
+                    limit: 4096, // 4kb
+                  },
+                },
+
+                // Inline lightweight images as Base64 encoded DataUrl string
+                {
+                  loader: 'url-loader',
+                  options: {
+                    name: '[hash:8].[ext]',
+                    limit: 4096, // 4kb
+                  },
+                },
+              ],
+            },
+
+            // Or return public URL to image resource
+            {
+              loader: 'file-loader',
+              options: {
+                name: '[hash:8].[ext]',
+              },
+            },
+          ],
+        },
       ],
     },
     plugins: [
